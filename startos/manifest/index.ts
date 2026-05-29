@@ -2,21 +2,21 @@ import { setupManifest } from '@start9labs/start-sdk'
 import { long, short } from './i18n'
 
 export const manifest = setupManifest({
-  id: 'gitea',
-  title: 'Gitea',
+  id: 'forgejo',
+  title: 'Forgejo',
   license: 'MIT',
-  packageRepo: 'https://github.com/Start9Labs/gitea-startos',
-  upstreamRepo: 'https://github.com/go-gitea/gitea',
-  marketingUrl: 'https://gitea.com/',
+  packageRepo: 'https://github.com/rpriven/forgejo-startos',
+  upstreamRepo: 'https://codeberg.org/forgejo/forgejo',
+  marketingUrl: 'https://forgejo.org/',
   donationUrl: null,
   description: { short, long },
   volumes: ['main'],
   images: {
-    gitea: {
+    forgejo: {
       source: {
-        dockerTag: 'gitea/gitea:1.26.2',
+        dockerTag: 'codeberg.org/forgejo/forgejo:15.0.2',
       },
-      arch: ['x86_64', 'aarch64', 'riscv64'],
+      arch: ['x86_64', 'aarch64'],
     },
   },
   dependencies: {},

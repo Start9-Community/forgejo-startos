@@ -31,7 +31,7 @@ export const setPrimaryUrl = sdk.Action.withInput(
   async ({ effects }) => ({
     name: i18n('Set Primary Url'),
     description: i18n(
-      'Choose which of your Gitea http URLs should serve as the primary URL for the purposes of creating links, sending invites, etc.',
+      'Choose which of your Forgejo http URLs should serve as the primary URL for the purposes of creating links, sending invites, etc.',
     ),
     warning: null,
     allowedStatuses: 'any',
@@ -45,11 +45,11 @@ export const setPrimaryUrl = sdk.Action.withInput(
   // optionally pre-fill the input form
   async ({ effects }) => ({
     url:
-      (await storeJson.read((s) => s.GITEA__server__ROOT_URL).once()) ||
+      (await storeJson.read((s) => s.FORGEJO__server__ROOT_URL).once()) ||
       undefined,
   }),
 
   // the execution function
   async ({ effects, input }) =>
-    storeJson.merge(effects, { GITEA__server__ROOT_URL: input.url }),
+    storeJson.merge(effects, { FORGEJO__server__ROOT_URL: input.url }),
 )

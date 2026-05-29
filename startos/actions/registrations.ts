@@ -9,7 +9,7 @@ export const registrations = sdk.Action.withoutInput(
   // metadata
   async ({ effects }) => {
     const disabled = await storeJson
-      .read((s) => s.GITEA__service__DISABLE_REGISTRATION)
+      .read((s) => s.FORGEJO__service__DISABLE_REGISTRATION)
       .const(effects)
 
     return {
@@ -25,7 +25,7 @@ export const registrations = sdk.Action.withoutInput(
           ),
       warning: disabled
         ? i18n(
-            'Anyone with your Gitea URL will be able to create an account on your server, which represents a security risk. Be careful!',
+            'Anyone with your Forgejo URL will be able to create an account on your server, which represents a security risk. Be careful!',
           )
         : null,
       allowedStatuses: 'any',
@@ -37,11 +37,11 @@ export const registrations = sdk.Action.withoutInput(
   // the execution function
   async ({ effects }) => {
     const disabled = await storeJson
-      .read((s) => s.GITEA__service__DISABLE_REGISTRATION)
+      .read((s) => s.FORGEJO__service__DISABLE_REGISTRATION)
       .const(effects)
 
     await storeJson.merge(effects, {
-      GITEA__service__DISABLE_REGISTRATION: !disabled,
+      FORGEJO__service__DISABLE_REGISTRATION: !disabled,
     })
   },
 )

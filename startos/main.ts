@@ -11,7 +11,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
    *
    * In this section, we fetch any resources or run any desired preliminary commands.
    */
-  console.info(i18n('Starting Gitea!'))
+  console.info(i18n('Starting Forgejo!'))
 
   const store = await storeJson.read().const(effects)
 
@@ -20,9 +20,9 @@ export const main = sdk.setupMain(async ({ effects }) => {
   }
 
   const {
-    GITEA__server__ROOT_URL,
-    GITEA__security__SECRET_KEY,
-    GITEA__service__DISABLE_REGISTRATION,
+    FORGEJO__server__ROOT_URL,
+    FORGEJO__security__SECRET_KEY,
+    FORGEJO__service__DISABLE_REGISTRATION,
     smtp,
   } = store
 
@@ -44,24 +44,24 @@ export const main = sdk.setupMain(async ({ effects }) => {
     }
   }
 
-  let mailer: GiteaMailer = {
-    GITEA__mailer__ENABLED: 'false',
+  let mailer: ForgejoMailer = {
+    FORGEJO__mailer__ENABLED: 'false',
   }
   if (smtpCredentials) {
     mailer = {
-      GITEA__mailer__ENABLED: 'true',
-      GITEA__mailer__PROTOCOL:
+      FORGEJO__mailer__ENABLED: 'true',
+      FORGEJO__mailer__PROTOCOL:
         smtpCredentials.security === 'tls' ? 'smtps' : 'smtp+starttls',
-      GITEA__mailer__SMTP_ADDR: smtpCredentials.host,
-      GITEA__mailer__SMTP_PORT: String(smtpCredentials.port),
-      GITEA__mailer__FROM: smtpCredentials.from,
-      GITEA__mailer__USER: smtpCredentials.username,
+      FORGEJO__mailer__SMTP_ADDR: smtpCredentials.host,
+      FORGEJO__mailer__SMTP_PORT: String(smtpCredentials.port),
+      FORGEJO__mailer__FROM: smtpCredentials.from,
+      FORGEJO__mailer__USER: smtpCredentials.username,
     }
     if (smtpCredentials.password)
-      mailer.GITEA__mailer__PASSWD = smtpCredentials.password
+      mailer.FORGEJO__mailer__PASSWD = smtpCredentials.password
   }
 
-  const sshDomain = new URL(GITEA__server__ROOT_URL).hostname
+  const sshDomain = new URL(FORGEJO__server__ROOT_URL).hostname
   const sshPort = await sdk.serviceInterface
     .getOwn(
       effects,
@@ -72,24 +72,24 @@ export const main = sdk.setupMain(async ({ effects }) => {
     )
     .once()
 
-  const env: GiteaEnv = {
-    GITEA__lfs__PATH: '/data/git/lfs',
-    GITEA__server__ROOT_URL,
-    GITEA__server__SSH_DOMAIN: sshDomain,
-    ...(sshPort ? { GITEA__server__SSH_PORT: String(sshPort) } : {}),
-    GITEA__service__DISABLE_REGISTRATION: String(
-      GITEA__service__DISABLE_REGISTRATION,
+  const env: ForgejoEnv = {
+    FORGEJO__lfs__PATH: '/data/git/lfs',
+    FORGEJO__server__ROOT_URL,
+    FORGEJO__server__SSH_DOMAIN: sshDomain,
+    ...(sshPort ? { FORGEJO__server__SSH_PORT: String(sshPort) } : {}),
+    FORGEJO__service__DISABLE_REGISTRATION: String(
+      FORGEJO__service__DISABLE_REGISTRATION,
     ),
-    GITEA__security__INSTALL_LOCK: 'true',
-    GITEA__security__SECRET_KEY,
+    FORGEJO__security__INSTALL_LOCK: 'true',
+    FORGEJO__security__SECRET_KEY,
     ...(mailer || {}),
   }
 
   const subcontainer = await sdk.SubContainer.of(
     effects,
-    { imageId: 'gitea' },
+    { imageId: 'forgejo' },
     mount,
-    'gitea-sub',
+    'forgejo-sub',
   )
 
   /**
@@ -112,11 +112,11 @@ export const main = sdk.setupMain(async ({ effects }) => {
         fn: () =>
           sdk.healthCheck.checkWebUrl(
             effects,
-            `http://gitea.startos:${uiPort}/api/healthz`,
+            `http://forgejo.startos:${uiPort}/api/healthz`,
             {
-              successMessage: i18n('Gitea is ready'),
+              successMessage: i18n('Forgejo is ready'),
               errorMessage: i18n(
-                'Gitea is still starting. If this persists, please check the logs.',
+                'Forgejo is still starting. If this persists, please check the logs.',
               ),
             },
           ),
@@ -129,7 +129,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         fn: async () => {
           const res = await subcontainer.execFail(
             [
-              'gitea',
+              'forgejo',
               'admin',
               'user',
               'list',
@@ -154,26 +154,26 @@ export const main = sdk.setupMain(async ({ effects }) => {
     })
 })
 
-type GiteaEnv = GiteaMailer & {
-  GITEA__lfs__PATH: '/data/git/lfs'
-  GITEA__server__ROOT_URL: string
-  GITEA__server__SSH_DOMAIN: string
-  GITEA__server__SSH_PORT?: string
-  GITEA__security__INSTALL_LOCK: 'true'
-  GITEA__security__SECRET_KEY: string
-  GITEA__service__DISABLE_REGISTRATION: string
+type ForgejoEnv = ForgejoMailer & {
+  FORGEJO__lfs__PATH: '/data/git/lfs'
+  FORGEJO__server__ROOT_URL: string
+  FORGEJO__server__SSH_DOMAIN: string
+  FORGEJO__server__SSH_PORT?: string
+  FORGEJO__security__INSTALL_LOCK: 'true'
+  FORGEJO__security__SECRET_KEY: string
+  FORGEJO__service__DISABLE_REGISTRATION: string
 }
 
-type GiteaMailer =
+type ForgejoMailer =
   | {
-      GITEA__mailer__ENABLED: 'false'
+      FORGEJO__mailer__ENABLED: 'false'
     }
   | {
-      GITEA__mailer__ENABLED: 'true'
-      GITEA__mailer__PROTOCOL: 'smtps' | 'smtp+starttls'
-      GITEA__mailer__SMTP_ADDR: string
-      GITEA__mailer__SMTP_PORT: string
-      GITEA__mailer__FROM: string
-      GITEA__mailer__USER: string
-      GITEA__mailer__PASSWD?: string
+      FORGEJO__mailer__ENABLED: 'true'
+      FORGEJO__mailer__PROTOCOL: 'smtps' | 'smtp+starttls'
+      FORGEJO__mailer__SMTP_ADDR: string
+      FORGEJO__mailer__SMTP_PORT: string
+      FORGEJO__mailer__FROM: string
+      FORGEJO__mailer__USER: string
+      FORGEJO__mailer__PASSWD?: string
     }

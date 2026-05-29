@@ -6,14 +6,14 @@ export const setPrimaryUrl = sdk.setupOnInit(async (effects) => {
   const httpUrls = await getHttpInterfaceUrls(effects)
 
   const rootUrl = await storeJson
-    .read((s) => s.GITEA__server__ROOT_URL)
+    .read((s) => s.FORGEJO__server__ROOT_URL)
     .const(effects)
 
   if (!rootUrl || !httpUrls.includes(rootUrl)) {
     await storeJson.merge(
       effects,
       {
-        GITEA__server__ROOT_URL: httpUrls.find((u) => u.includes('.local')),
+        FORGEJO__server__ROOT_URL: httpUrls.find((u) => u.includes('.local')),
       },
       { allowWriteAfterConst: true },
     )

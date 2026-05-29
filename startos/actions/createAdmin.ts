@@ -49,13 +49,13 @@ export const createAdmin = sdk.Action.withInput(
 
     await sdk.SubContainer.withTemp(
       effects,
-      { imageId: 'gitea' },
+      { imageId: 'forgejo' },
       mount,
       'create-admin-user',
       async (subc) => {
         const execResult = await subc.execFail(
           [
-            'gitea',
+            'forgejo',
             'admin',
             'user',
             'create',

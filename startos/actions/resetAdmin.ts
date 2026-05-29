@@ -8,12 +8,12 @@ export const inputSpec = InputSpec.of({
   username: Value.dynamicSelect(async ({ effects }) => {
     const result = await sdk.SubContainer.withTemp(
       effects,
-      { imageId: 'gitea' },
+      { imageId: 'forgejo' },
       mount,
       'list-admin-users',
       async (subc) => {
         const execResult = await subc.execFail(
-          ['gitea', 'admin', 'user', 'list', '--admin', '--work-path', '/data'],
+          ['forgejo', 'admin', 'user', 'list', '--admin', '--work-path', '/data'],
           { user: 'git' },
         )
         return execResult
@@ -69,13 +69,13 @@ export const resetAdmin = sdk.Action.withInput(
 
     const passwordResult = await sdk.SubContainer.withTemp(
       effects,
-      { imageId: 'gitea' },
+      { imageId: 'forgejo' },
       mount,
       'reset-admin-password',
       async (subc) => {
         const execResult = await subc.exec(
           [
-            'gitea',
+            'forgejo',
             'admin',
             'user',
             'change-password',

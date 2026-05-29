@@ -12,7 +12,7 @@ export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
   const httpInterface = sdk.createInterface(effects, {
     name: i18n('Web UI and git (HTTP)'),
     id: httpInterfaceId,
-    description: i18n('Web UI for Gitea. Also used for git over HTTP'),
+    description: i18n('Web UI for Forgejo. Also used for git over HTTP'),
     type: 'ui',
     masked: false,
     schemeOverride: null,

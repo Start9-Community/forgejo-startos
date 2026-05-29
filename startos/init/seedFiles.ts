@@ -5,7 +5,7 @@ import { getSecretKey } from '../utils'
 export const seedFiles = sdk.setupOnInit(async (effects, kind) => {
   if (kind === 'install') {
     await storeJson.merge(effects, {
-      GITEA__security__SECRET_KEY: getSecretKey(),
+      FORGEJO__security__SECRET_KEY: getSecretKey(),
     })
   } else {
     await storeJson.merge(effects, {})

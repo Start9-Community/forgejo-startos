@@ -3,9 +3,9 @@ import { sdk } from '../sdk'
 
 const shape = z
   .object({
-    GITEA__server__ROOT_URL: z.string().catch(''),
-    GITEA__security__SECRET_KEY: z.string(),
-    GITEA__service__DISABLE_REGISTRATION: z.boolean().catch(true),
+    FORGEJO__server__ROOT_URL: z.string().catch(''),
+    FORGEJO__security__SECRET_KEY: z.string(),
+    FORGEJO__service__DISABLE_REGISTRATION: z.boolean().catch(true),
     smtp: smtpShape,
   })
   .strip()
