@@ -14,8 +14,16 @@ Packaged from the `Start9Labs/gitea-startos` template (Forgejo is a Gitea fork).
   Fixed in `manifest/index.ts` (`arch: ['x86_64','aarch64']`) + `Makefile` (`ARCHES := x86 arm`).
 - `npm ci && make` builds clean → `forgejo_x86_64.s9pk` (66M) + `forgejo_aarch64.s9pk` (60M). `tsc` passes.
 
-## 🧱 OPEN BLOCKER — install fails on StartOS 0.4.0-beta.9
-`Error: /usr/lib/startos/package/index.js not found` when sideloaded to a fresh 0.4.0-beta.9 VM.
+## ✅ RESOLVED — was our LOCAL build env, not StartOS
+**2026-05-29: the CI-built `.s9pk` installs + RUNS perfectly** on the 0.4.0-beta.9 VM (health green,
+web UI + git interfaces up, admin-user action works). Root cause confirmed: building locally with our
+freshly-installed `tar2sqfs` produced a `javascript.squashfs` StartOS couldn't mount. **Fix: build via
+Start9 CI** (push to GitHub fork → `build.yml` → download artifact). Always use CI-built artifacts, not local.
+(Sideload that worked: StartOS web UI from the host browser at https://easy-storks.local — start-cli's
+TLS-by-IP was too flaky; GUI upload bypasses it.)
+
+### (historical) The blocker that's now resolved
+`Error: /usr/lib/startos/package/index.js not found` when sideloading a LOCAL build to 0.4.0-beta.9.
 Ruled out: path (index.js IS at javascript.squashfs root → mounts to exactly that path), compression
 (gzip), permissions. start-sdk 1.5.3 (gitea's pin); StartOS + start-cli both 0.4.0-beta.9.
 
@@ -39,6 +47,12 @@ kernel (→ empty mount → "not found"), even though the host's `unsquashfs` re
   upload path does full verification → needs `--root-ca` + matching hostname. `.local` doesn't resolve from
   host (NAT, no mDNS). Fix: add `192.168.122.98 easy-storks.local` to /etc/hosts, then
   `-H https://easy-storks.local --root-ca <startos-ca.pem>`.
+
+## ✅ VALIDATED END-TO-END (2026-05-29)
+CI-built package: installs → runs (health green) → web UI loads → **admin login + dashboard work**
+(Forgejo 15.0.2 on StartOS 0.4.0-beta.9 VM). Set-Primary-URL action works (ROOT_URL correct).
+NOTE: a login 500 (`RegenerateSession: invalid 'sid' 26 != 16`) was just a **stale cross-domain session
+cookie from Rob's own Forgejo** — fixed by an incognito window. NOT a package bug.
 
 ## 📋 Remaining for a PR-ready package
 - Replace `icon.svg` with the Forgejo logo (still Gitea's).

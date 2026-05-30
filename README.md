@@ -1,14 +1,14 @@
 <p align="center">
-  <img src="icon.svg" alt="Gitea Logo" width="21%">
+  <img src="icon.svg" alt="Forgejo Logo" width="21%">
 </p>
 
-# Gitea on StartOS
+# Forgejo on StartOS
 
-> **Upstream docs:** <https://gitea.com/gitea/docs>
+> **Upstream docs:** <https://forgejo.org/docs>
 >
-> Everything not listed in this document behaves identically to upstream Gitea. If a feature, setting, or behavior is not mentioned here, the upstream documentation is accurate and fully applicable.
+> Everything not listed in this document behaves identically to upstream Forgejo. If a feature, setting, or behavior is not mentioned here, the upstream documentation is accurate and fully applicable.
 
-[Gitea](https://github.com/go-gitea/gitea) is a community managed lightweight code hosting solution written in Go. This repository packages Gitea for [StartOS](https://github.com/Start9Labs/start-os/).
+[Forgejo](https://codeberg.org/forgejo/forgejo) is a community managed lightweight code hosting solution written in Go. This repository packages Forgejo for [StartOS](https://github.com/Start9Labs/start-os/).
 
 ---
 
@@ -35,12 +35,12 @@
 
 | Aspect | Standard Docker/Compose | StartOS |
 |---|---|---|
-| Image | `gitea/gitea` (upstream) | Same image, unmodified |
-| Architectures | Depends on host | x86_64, aarch64, riscv64 |
+| Image | `codeberg.org/forgejo/forgejo` (upstream) | Same image, unmodified |
+| Architectures | Depends on host | x86_64, aarch64 |
 | Container orchestration | Docker / Docker Compose | StartOS SDK (`SubContainer`) — no user-facing `docker-compose.yml` |
-| Entrypoint | Default Gitea entrypoint | Same (via `sdk.useEntrypoint()`) |
+| Entrypoint | Default Forgejo entrypoint | Same (via `sdk.useEntrypoint()`) |
 
-The upstream Gitea image is used unmodified. No custom Dockerfile exists. StartOS wraps the container with its own lifecycle management, health checks, and action system.
+The upstream Forgejo image is used unmodified. No custom Dockerfile exists. StartOS wraps the container with its own lifecycle management, health checks, and action system.
 
 ---
 
@@ -59,7 +59,7 @@ All persistent state lives under `/data` on a single StartOS-managed volume. The
 
 ## Installation and First-Run Flow
 
-Standard Gitea presents a web-based installation wizard on first launch where you configure the database, admin account, server URL, and more.
+Standard Forgejo presents a web-based installation wizard on first launch where you configure the database, admin account, server URL, and more.
 
 **On StartOS, this wizard is skipped entirely.** The wrapper handles setup automatically:
 
@@ -71,40 +71,40 @@ Standard Gitea presents a web-based installation wizard on first launch where yo
 
 2. **Init:** The primary URL is auto-selected from available interface addresses (prefers `.local`).
 
-3. **First start:** The environment variable `GITEA__security__INSTALL_LOCK=true` is set, which tells Gitea to skip its installation wizard.
+3. **First start:** The environment variable `FORGEJO__security__INSTALL_LOCK=true` is set, which tells Forgejo to skip its installation wizard.
 
 4. **Admin user creation:** A oneshot task checks whether any admin users exist. If none are found, StartOS surfaces an **"important" task** prompting the user to create their first admin account (username, email). A strong 22-character password is auto-generated and displayed once.
 
-**Key difference:** There is no web-based setup wizard. Admin account creation happens through the StartOS action system, not through the Gitea UI.
+**Key difference:** There is no web-based setup wizard. Admin account creation happens through the StartOS action system, not through the Forgejo UI.
 
 ---
 
 ## Configuration Management
 
-Gitea normally uses `app.ini` or environment variables for configuration. On StartOS, a subset of settings are managed externally via environment variables injected at container start, with values persisted in `/data/store.json`.
+Forgejo normally uses `app.ini` or environment variables for configuration. On StartOS, a subset of settings are managed externally via environment variables injected at container start, with values persisted in `/data/store.json`.
 
 ### Settings managed by StartOS (not `app.ini`)
 
-These settings are controlled exclusively through StartOS actions and cannot be changed via `app.ini` or the Gitea admin panel:
+These settings are controlled exclusively through StartOS actions and cannot be changed via `app.ini` or the Forgejo admin panel:
 
 | Setting | Env Var | Managed Via |
 |---|---|---|
-| Server root URL | `GITEA__server__ROOT_URL` | "Set Primary URL" action |
-| Install lock | `GITEA__security__INSTALL_LOCK` | Always `true` (hardcoded) |
-| Secret key | `GITEA__security__SECRET_KEY` | Auto-generated at install, stored in `store.json` |
-| User registration | `GITEA__service__DISABLE_REGISTRATION` | "Enable/Disable Registrations" action |
-| LFS path | `GITEA__lfs__PATH` | Always `/data/git/lfs` (hardcoded) |
-| SMTP/mailer | `GITEA__mailer__*` | "Configure SMTP" action |
+| Server root URL | `FORGEJO__server__ROOT_URL` | "Set Primary URL" action |
+| Install lock | `FORGEJO__security__INSTALL_LOCK` | Always `true` (hardcoded) |
+| Secret key | `FORGEJO__security__SECRET_KEY` | Auto-generated at install, stored in `store.json` |
+| User registration | `FORGEJO__service__DISABLE_REGISTRATION` | "Enable/Disable Registrations" action |
+| LFS path | `FORGEJO__lfs__PATH` | Always `/data/git/lfs` (hardcoded) |
+| SMTP/mailer | `FORGEJO__mailer__*` | "Configure SMTP" action |
 
 ### Settings NOT managed by StartOS
 
-Everything else — repository settings, webhook configuration, OAuth, labels, user management, organization settings, etc. — works exactly as documented upstream via Gitea's admin panel or `app.ini`.
+Everything else — repository settings, webhook configuration, OAuth, labels, user management, organization settings, etc. — works exactly as documented upstream via Forgejo's admin panel or `app.ini`.
 
 ---
 
 ## Network Access and Interfaces
 
-StartOS exposes two network interfaces for Gitea:
+StartOS exposes two network interfaces for Forgejo:
 
 ### HTTP Interface (port 3000)
 - **Purpose:** Web UI and git-over-HTTP
@@ -127,7 +127,7 @@ StartOS exposes two network interfaces for Gitea:
 | SSH over LAN | Yes (via LAN IP:port or custom domain) |
 | SSH over Tor | Yes |
 
-Each interface gets a unique port on the LAN. You can access Gitea via `<lan-ip>:<port>` or `<hostname>.local:<port>`. Public or private domains can be added in StartOS and selected as the primary URL via the "Set Primary URL" action.
+Each interface gets a unique port on the LAN. You can access Forgejo via `<lan-ip>:<port>` or `<hostname>.local:<port>`. Public or private domains can be added in StartOS and selected as the primary URL via the "Set Primary URL" action.
 
 ### Using git over HTTP/Tor
 
@@ -160,25 +160,25 @@ Requires `netcat` (`nc`) installed on the client.
 
 ## Actions (StartOS UI)
 
-StartOS adds management actions accessible from the service's page in the StartOS UI. These have no equivalent in standard Gitea's admin panel.
+StartOS adds management actions accessible from the service's page in the StartOS UI. These have no equivalent in standard Forgejo's admin panel.
 
 | Action | Visibility | Availability | Purpose |
 |---|---|---|---|
 | Create Admin User | Hidden | Running only | Create first admin account (auto-triggered if none exist) |
 | Reset Admin Password | Visible | Running only | Generate new password for an existing admin |
-| Set Primary URL | Visible | Any | Choose which URL serves as Gitea's `ROOT_URL` |
+| Set Primary URL | Visible | Any | Choose which URL serves as Forgejo's `ROOT_URL` |
 | Enable/Disable Registrations | Visible | Any | Toggle user self-registration |
 | Configure SMTP | Visible | Any | Set up email sending |
 
 ### Create Admin User
 - **Inputs:** Username, email
 - **Outputs:** Username and auto-generated 22-character password (displayed once)
-- Runs `gitea admin user create` internally
+- Runs `forgejo admin user create` internally
 
 ### Reset Admin Password
 - **Inputs:** Select from list of existing admin users
 - **Outputs:** Username and new auto-generated 22-character password
-- Runs `gitea admin user change-password` internally
+- Runs `forgejo admin user change-password` internally
 
 ### Set Primary URL
 - **Inputs:** Select from available HTTP interface URLs (`.local`, `.onion`, custom domains)
@@ -200,44 +200,44 @@ StartOS adds management actions accessible from the service's page in the StartO
 
 ## SMTP / Email
 
-| Aspect | Standard Gitea | StartOS |
+| Aspect | Standard Forgejo | StartOS |
 |---|---|---|
 | Configuration | `app.ini` `[mailer]` section | "Configure SMTP" action in StartOS UI |
 | System SMTP | N/A | Can use StartOS system-level SMTP credentials |
 | Custom SMTP | Via `app.ini` | Via action form (server, port, from, login, password) |
 | Default state | Disabled unless configured | Disabled |
 
-SMTP settings configured through the Gitea admin panel or `app.ini` will be overridden by the environment variables set by StartOS on each restart.
+SMTP settings configured through the Forgejo admin panel or `app.ini` will be overridden by the environment variables set by StartOS on each restart.
 
 ---
 
 ## Backups and Restore
 
-| Aspect | Standard Gitea | StartOS |
+| Aspect | Standard Forgejo | StartOS |
 |---|---|---|
-| Backup method | `gitea dump` or manual file copy | StartOS backup system — full volume snapshot of `/data` |
+| Backup method | `forgejo dump` or manual file copy | StartOS backup system — full volume snapshot of `/data` |
 | Backup scope | Configurable | Entire `/data` volume (repos, DB, LFS, config, `store.json`) |
 | Restore | Manual | StartOS restore flow — volume is fully restored before service starts |
 | Scheduling | Manual or via cron | Managed through StartOS backup settings |
 
-The `gitea dump` command is not used. StartOS backs up the raw volume contents.
+The `forgejo dump` command is not used. StartOS backs up the raw volume contents.
 
 ---
 
 ## Health Checks
 
-| Aspect | Standard Gitea | StartOS |
+| Aspect | Standard Forgejo | StartOS |
 |---|---|---|
 | Endpoint | N/A (or custom Docker healthcheck) | `GET /api/healthz` on port 3000 |
 | Grace period | N/A | 120 seconds |
 | Display | N/A | "Web Interface" status shown in StartOS UI |
-| Failure message | N/A | "Gitea is still starting. If this persists, please check the logs." |
+| Failure message | N/A | "Forgejo is still starting. If this persists, please check the logs." |
 
 ---
 
 ## Dependencies
 
-None. Gitea runs with an embedded SQLite database and has no external service dependencies.
+None. Forgejo runs with an embedded SQLite database and has no external service dependencies.
 
 ---
 
@@ -246,13 +246,13 @@ None. Gitea runs with an embedded SQLite database and has no external service de
 1. **No web-based installation wizard** — setup is fully automated by StartOS.
 2. **No external database** — uses embedded SQLite only. No PostgreSQL or MySQL option.
 3. **Certain settings are environment-locked** — `ROOT_URL`, `INSTALL_LOCK`, `SECRET_KEY`, `DISABLE_REGISTRATION`, `LFS_PATH`, and mailer settings are injected as environment variables and override any `app.ini` values.
-4. **Registration disabled by default** — must be explicitly enabled via action (standard Gitea defaults to enabled).
+4. **Registration disabled by default** — must be explicitly enabled via action (standard Forgejo defaults to enabled).
 
 ---
 
 ## What Is Unchanged from Upstream
 
-Everything not listed above works exactly as documented at <https://gitea.com/gitea/docs>. This includes but is not limited to:
+Everything not listed above works exactly as documented at <https://forgejo.org/docs>. This includes but is not limited to:
 
 - Repository management (create, fork, mirror, archive, transfer)
 - Git operations (push, pull, fetch, LFS)
@@ -264,7 +264,7 @@ Everything not listed above works exactly as documented at <https://gitea.com/gi
 - Two-factor authentication
 - User and admin panel settings (except the env-locked settings above)
 - API (`/api/v1/...`)
-- Gitea Actions (CI/CD)
+- Forgejo Actions (CI/CD)
 - Package registry
 - RSS/Atom feeds
 - Markdown rendering, syntax highlighting
@@ -281,9 +281,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and development wo
 ## Quick Reference for AI Consumers
 
 ```yaml
-package_id: gitea
-image: gitea/gitea
-architectures: [x86_64, aarch64, riscv64]
+package_id: forgejo
+image: codeberg.org/forgejo/forgejo
+architectures: [x86_64, aarch64]
 volumes:
   main: /data
 ports:
@@ -291,17 +291,17 @@ ports:
   ssh: 22
 dependencies: none
 startos_managed_env_vars:
-  - GITEA__server__ROOT_URL
-  - GITEA__security__INSTALL_LOCK
-  - GITEA__security__SECRET_KEY
-  - GITEA__service__DISABLE_REGISTRATION
-  - GITEA__lfs__PATH
-  - GITEA__mailer__ENABLED
-  - GITEA__mailer__SMTP_ADDR
-  - GITEA__mailer__SMTP_PORT
-  - GITEA__mailer__FROM
-  - GITEA__mailer__USER
-  - GITEA__mailer__PASSWD
+  - FORGEJO__server__ROOT_URL
+  - FORGEJO__security__INSTALL_LOCK
+  - FORGEJO__security__SECRET_KEY
+  - FORGEJO__service__DISABLE_REGISTRATION
+  - FORGEJO__lfs__PATH
+  - FORGEJO__mailer__ENABLED
+  - FORGEJO__mailer__SMTP_ADDR
+  - FORGEJO__mailer__SMTP_PORT
+  - FORGEJO__mailer__FROM
+  - FORGEJO__mailer__USER
+  - FORGEJO__mailer__PASSWD
 actions:
   - create-admin
   - reset-admin
