@@ -1,7 +1,7 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
-export const v_15_0_2 = VersionInfo.of({
-  version: '15.0.2:0',
+export const current = VersionInfo.of({
+  version: '15.0.3:0',
   releaseNotes: {
     en_US: `Initial Forgejo release for StartOS.`,
     es_ES: `Versión inicial de Forgejo para StartOS.`,
