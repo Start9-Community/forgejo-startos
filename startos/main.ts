@@ -82,6 +82,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     ),
     FORGEJO__security__INSTALL_LOCK: 'true',
     FORGEJO__security__SECRET_KEY,
+    // Forgejo's default session cookie is the generic `session`, which collides
+    // with other services on the same StartOS LAN host (cookies are host-scoped,
+    // port-agnostic). Pin a unique name so a stale cookie can't 500 the login.
+    FORGEJO__session__COOKIE_NAME: 'i_like_forgejo',
     ...(mailer || {}),
   }
 
@@ -161,6 +165,7 @@ type ForgejoEnv = ForgejoMailer & {
   FORGEJO__server__SSH_PORT?: string
   FORGEJO__security__INSTALL_LOCK: 'true'
   FORGEJO__security__SECRET_KEY: string
+  FORGEJO__session__COOKIE_NAME: 'i_like_forgejo'
   FORGEJO__service__DISABLE_REGISTRATION: string
 }
 

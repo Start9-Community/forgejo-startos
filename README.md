@@ -94,6 +94,7 @@ These settings are controlled exclusively through StartOS actions and cannot be 
 | Secret key | `FORGEJO__security__SECRET_KEY` | Auto-generated at install, stored in `store.json` |
 | User registration | `FORGEJO__service__DISABLE_REGISTRATION` | "Enable/Disable Registrations" action |
 | LFS path | `FORGEJO__lfs__PATH` | Always `/data/git/lfs` (hardcoded) |
+| Session cookie name | `FORGEJO__session__COOKIE_NAME` | Always `i_like_forgejo` (hardcoded) — avoids cookie collisions with other services on the same local hostname |
 | SMTP/mailer | `FORGEJO__mailer__*` | "Configure SMTP" action |
 
 ### Settings NOT managed by StartOS
@@ -296,6 +297,7 @@ startos_managed_env_vars:
   - FORGEJO__security__SECRET_KEY
   - FORGEJO__service__DISABLE_REGISTRATION
   - FORGEJO__lfs__PATH
+  - FORGEJO__session__COOKIE_NAME
   - FORGEJO__mailer__ENABLED
   - FORGEJO__mailer__SMTP_ADDR
   - FORGEJO__mailer__SMTP_PORT
