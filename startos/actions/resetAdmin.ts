@@ -13,7 +13,15 @@ export const inputSpec = InputSpec.of({
       'list-admin-users',
       async (subc) => {
         const execResult = await subc.execFail(
-          ['forgejo', 'admin', 'user', 'list', '--admin', '--work-path', '/data'],
+          [
+            'forgejo',
+            'admin',
+            'user',
+            'list',
+            '--admin',
+            '--work-path',
+            '/data',
+          ],
           { user: 'git' },
         )
         return execResult
