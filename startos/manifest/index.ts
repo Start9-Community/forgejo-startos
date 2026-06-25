@@ -5,7 +5,7 @@ export const manifest = setupManifest({
   id: 'forgejo',
   title: 'Forgejo',
   license: 'GPL-3.0-or-later',
-  packageRepo: 'https://github.com/Start9-Community/forgejo-startos',
+  packageRepo: 'https://github.com/Start9Labs/forgejo-startos',
   upstreamRepo: 'https://codeberg.org/forgejo/forgejo',
   marketingUrl: 'https://forgejo.org/',
   donationUrl: null,
